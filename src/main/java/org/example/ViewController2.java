@@ -1,22 +1,20 @@
-package com.example.demo_spring_2.controller;
+package org.example;
 
-import com.example.demo_spring_2.models.User;
-import com.example.demo_spring_2.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping("/view")
-public class ViewController {
+@RequestMapping("/view2")
+public class ViewController2 {
 
+    public ViewController2(){
+        System.out.println("****** viewController2");
+    }
 
-
-    @Autowired
-    @Qualifier("userServiceImpl")
-    private UserService userService;
 
     @GetMapping("/home")
     public String homePage(@RequestParam(value = "name", required = false, defaultValue = "Petros") String name) {
@@ -34,9 +32,4 @@ public class ViewController {
     }
 
 
-    @GetMapping
-    @ResponseBody
-    public User getUsers(){
-        return null;
-    }
 }
