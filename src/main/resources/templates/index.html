@@ -1,10 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>DemoSpring</title>
 </head>
 <body>
-Home page
+<h3>Welcome our application</h3>
+
+<div class="register-form">
+    <form  th:action="@{/user}" method="post" th:object="${registerUser}">
+        <input type="text" placeholder="Name" th:field="*{name}"> </br>
+        <input type="text" placeholder="Surname" th:field="*{surname}"> </br>
+        <input type="email" placeholder="Email" th:field="*{email}"> </br>
+        <input type="password" placeholder="Password" th:field="*{password}"> </br>
+        <label>Gender:</label>
+        <input type="radio" th:field="*{gender}" value="MALE"/>Male
+        <input type="radio" th:field="*{gender}" value="FEMALE"/>Female<br/> </br>
+        <button type="submit">Register</button>
+
+    </form>
+</div>
+
+
+<div class="login-form">
+
+</div>
 </body>
 </html>
