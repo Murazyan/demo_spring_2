@@ -38,6 +38,9 @@ public class User {
     @Column(name = "email", unique = true)
     private String email;
 
+    @Column(name = "verification_code")
+    private String verificationCode;
+
     @Column
     @NotBlank(message = "User password is required")
     private String password;
@@ -72,6 +75,11 @@ public class User {
     @PreUpdate
     public void onUpdate() {
         this.updated = LocalDateTime.now();
+    }
+
+
+    public boolean isVerified(){
+        return verificationCode==null;
     }
 
 }
