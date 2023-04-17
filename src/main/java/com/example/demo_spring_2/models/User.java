@@ -14,7 +14,6 @@ import java.util.List;
 @Setter
 @Getter
 @ToString
-@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -49,6 +48,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    private boolean locked;
+
     @Column
     private LocalDateTime created;
 
@@ -68,6 +69,7 @@ public class User {
 
     @PrePersist
     public void onCreate() {
+        this.locked = true;
         this.created = LocalDateTime.now();
         this.updated = created;
     }

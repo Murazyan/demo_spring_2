@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
@@ -22,5 +23,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "update User u set u.verificationCode=:verifyCode where u.id=:id")
     void updateVerificationCode(@Param("id") int id,
                                @Param("verifyCode") String verificationCode);
+
+    Optional<User> findByEmail(String email);
 
 }
