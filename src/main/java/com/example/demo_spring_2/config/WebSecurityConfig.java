@@ -1,6 +1,8 @@
 package com.example.demo_spring_2.config;
 
 //import com.example.demo_spring_2.handler.CustomAuthenticationFailureHandler;
+
+import com.example.demo_spring_2.handler.CustomAuthenticationFailureHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +30,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 //@Profile("dev")
-public class WebSecurityConfig{
+public class WebSecurityConfig {
 
 
     @Autowired
@@ -41,18 +43,20 @@ public class WebSecurityConfig{
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-                http.csrf().disable()
-                        .authorizeHttpRequests()
-                        .requestMatchers("/user/register").permitAll()
-                        .requestMatchers("/").permitAll()
-                        .anyRequest()
-                        .authenticated()
-                        .and()
-                        .formLogin()
-                        .loginPage("/")
-                        .usernameParameter("loginUserName")
-                        .passwordParameter("loginPassword")
-                        .defaultSuccessUrl("/user/home");
+        http.csrf().disable()
+                .authorizeHttpRequests()
+                .requestMatchers("/user").permitAll()
+                .requestMatchers("/user/verify").permitAll()
+                .requestMatchers("/").permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .formLogin()
+                .loginPage("/")
+                .usernameParameter("email")
+                .passwordParameter("password")
+                .defaultSuccessUrl("/user/home")
+                .failureHandler(new CustomAuthenticationFailureHandler());
 
 //                .authorizeRequests()
 ////                .antMatchers("/actuator/**").permitAll()
@@ -129,11 +133,8 @@ public class WebSecurityConfig{
 //    @Override
 
 
-
-
-
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder);

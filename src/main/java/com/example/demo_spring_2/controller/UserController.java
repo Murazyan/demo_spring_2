@@ -1,9 +1,10 @@
 package com.example.demo_spring_2.controller;
 
 import com.example.demo_spring_2.models.User;
-import jakarta.servlet.Filter;
+import com.example.demo_spring_2.security.CurrentUser;
 import com.example.demo_spring_2.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -38,5 +39,12 @@ public class UserController {
         }else {
             return "verifyError";
         }
+    }
+
+    @GetMapping("/home")
+    public String userHome(@AuthenticationPrincipal CurrentUser currentUser,
+                           Model model){
+        model.addAttribute("currentUser", currentUser.getUser());
+        return "userHome";
     }
 }

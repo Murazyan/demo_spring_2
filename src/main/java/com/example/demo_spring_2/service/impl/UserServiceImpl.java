@@ -6,6 +6,7 @@ import com.example.demo_spring_2.repositories.UserRepository;
 import com.example.demo_spring_2.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,12 +15,14 @@ public class UserServiceImpl implements UserService {
 
     private final AppUtil appUtil;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;
     @Override
     public User register(User user) {
         if(userRepository.existsByEmail(user.getEmail())){
             return null;
         }else {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setVerificationCode(appUtil.generateRandomString(6));
             user =  userRepository.save(user);
             applicationEventPublisher.publishEvent(new UserRegisteredEvent(this, user));

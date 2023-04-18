@@ -56,20 +56,20 @@ public class User {
     @Column
     private LocalDateTime updated;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles;
 
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "author", fetch = FetchType.EAGER)
     private List<New> news;
 
 
     @PrePersist
     public void onCreate() {
-        this.locked = true;
+        this.locked = false;
         this.created = LocalDateTime.now();
         this.updated = created;
     }

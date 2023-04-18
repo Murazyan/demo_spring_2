@@ -23,9 +23,9 @@
 
 <div class="login-form">
 
-    <form action="#">
-        <input placeholder="Email" th:name="loginUserName"><br>
-        <input placeholder="Password" th:name="loginPassword"><br>
+    <form action="#" method="post" th:object="${loginUser}">
+        <input placeholder="Email"  th:field="*{email}"  name="email"><br>
+        <input placeholder="Password"  th:field="*{password}" name="password"><br>
         <button type="submit">Login</button>
     </form>
 </div>
