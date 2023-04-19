@@ -6,10 +6,11 @@
 </head>
 <body>
 <p style="color: red" th:if="${param.errorType!=null &&  param.errorType[0]=='accessDenied'}" >Sorry you do not have access</p>
-<p>User home page</p>
+Admin home page<br>
 <a  th:href="${'/logout'}">LogOut</a>
 Welcome
 <p th:text="${currentUser.name}"></p>
 <p th:text="${currentUser.surname}"></p>
+
 </body>
 </html>

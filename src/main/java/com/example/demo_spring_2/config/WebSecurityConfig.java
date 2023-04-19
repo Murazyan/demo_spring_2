@@ -2,6 +2,7 @@ package com.example.demo_spring_2.config;
 
 //import com.example.demo_spring_2.handler.CustomAuthenticationFailureHandler;
 
+import com.example.demo_spring_2.handler.CustomAccessDeniedHandler;
 import com.example.demo_spring_2.handler.CustomAuthenticationFailureHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,14 +23,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
-@EnableWebMvc
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-//@Profile("dev")
 public class WebSecurityConfig {
 
 
@@ -47,6 +47,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/user").permitAll()
                 .requestMatchers("/user/verify").permitAll()
+                .requestMatchers("/admin/**").hasAuthority("ADMIN")
                 .requestMatchers("/").permitAll()
                 .anyRequest()
                 .authenticated()
@@ -56,33 +57,18 @@ public class WebSecurityConfig {
                 .usernameParameter("email")
                 .passwordParameter("password")
                 .defaultSuccessUrl("/user/home")
-                .failureHandler(new CustomAuthenticationFailureHandler());
 
-//                .authorizeRequests()
-////                .antMatchers("/actuator/**").permitAll()
-////                .antMatchers("/user/register").permitAll()
-////                .antMatchers("/user/activate").permitAll()
-////                .antMatchers("/user/image").permitAll()
-////
-////                .antMatchers("/images/**").permitAll()
-////                .antMatchers("/admin/**").hasAuthority("ADMIN")
-////                .antMatchers("/verifyError").permitAll()
-//                .anyRequest().permitAll()
-//                .and()
-//                .formLogin()
-//                .loginPage("/login")
-//                .usernameParameter("email")
-//                .passwordParameter("password")
-//                .defaultSuccessUrl("/home")
-//                .failureUrl("/login?error=Bad credentials")
-////                .failureHandler(new CustomAuthenticationFailureHandler())
-//                .permitAll()
-//                .and()
-//                .logout()
+                .failureHandler(new CustomAuthenticationFailureHandler())
+                .and()
+                .exceptionHandling().accessDeniedHandler(accessDeniedHandler())
+
+                .and()
+                .logout()
+                .logoutSuccessUrl("/")
 //                .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
-//                .invalidateHttpSession(true)
-//                .clearAuthentication(true)
-//                .deleteCookies("JSESSIONID")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID");
 //                .and()
 //                .rememberMe()
 ////                .tokenValiditySeconds(2*604800) // 1 week
@@ -90,48 +76,6 @@ public class WebSecurityConfig {
 //                .and();
         return http.build();
     }
-
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//        http.csrf().disable();
-//                .authorizeRequests()
-//                .antMatchers("/actuator/**").permitAll()
-//                .antMatchers("/user/register").permitAll()
-//                .antMatchers("/user/activate").permitAll()
-//                .antMatchers("/user/image").permitAll()
-//
-//                .antMatchers("/images/**").permitAll()
-////                .antMatchers("/admin/**").hasAuthority("ADMIN")
-//                .antMatchers("/verifyError").permitAll()
-//                .anyRequest().permitAll()
-//                .and()
-//                .formLogin()
-//                .loginPage("/login")
-//                .usernameParameter("email")
-//                .passwordParameter("password")
-//                .defaultSuccessUrl("/home")
-//                .failureUrl("/login?error=Bad credentials")
-////                .failureHandler(new CustomAuthenticationFailureHandler())
-//                .permitAll()
-//                .and()
-//                .logout()
-//                .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
-//                .invalidateHttpSession(true)
-//                .clearAuthentication(true)
-//                .deleteCookies("JSESSIONID")
-//                .and()
-//                .rememberMe()
-////                .tokenValiditySeconds(2*604800) // 1 week
-//                .tokenValiditySeconds(3000) // 1 week
-//    }
-
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.userDetailsService(userDetailsService)
-//                .passwordEncoder(passwordEncoder);
-//    }
-//    @Override
-
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -141,9 +85,9 @@ public class WebSecurityConfig {
         return authProvider;
     }
 
-//    @Bean
-//    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-//        return config.getAuthenticationManager();
-//    }
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler(){
+        return new CustomAccessDeniedHandler();
+    }
 
 }

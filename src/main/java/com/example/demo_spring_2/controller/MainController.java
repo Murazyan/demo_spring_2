@@ -18,4 +18,10 @@ public class MainController {
         modelMap.addAttribute("loginUser", new User());
         return "index";
     }
+
+    @RequestMapping(value = "/accessDenied", method = RequestMethod.GET)
+    public String accessDenied(Model modelMap){
+
+        return "accessDenied";
+    }
 }

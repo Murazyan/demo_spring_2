@@ -41,4 +41,8 @@ public class Role {
         this.updated = LocalDateTime.now();
     }
 
+    public Role(String name){
+        this.name = name;
+    }
+
 }

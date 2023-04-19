@@ -16,6 +16,7 @@ import java.util.List;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "users")
 public class User {
@@ -82,6 +83,12 @@ public class User {
 
     public boolean isVerified(){
         return verificationCode==null;
+    }
+
+    public boolean isAdmin(){
+        return this.roles.stream()
+                .map(Role::getName)
+                .anyMatch(role->role.equalsIgnoreCase("admin"));
     }
 
 }

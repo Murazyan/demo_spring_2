@@ -19,13 +19,13 @@
         <button type="submit">Register</button>
     </form>
 </div>
-
-
+<br>
 <div class="login-form">
 
     <form action="#" method="post" th:object="${loginUser}">
         <input placeholder="Email"  th:field="*{email}"  name="email"><br>
         <input placeholder="Password"  th:field="*{password}" name="password"><br>
+        <p style="color: red" th:if="${param.msg}" th:text="${param.msg}"></p>
         <button type="submit">Login</button>
     </form>
 </div>
