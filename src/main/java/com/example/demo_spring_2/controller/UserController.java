@@ -20,37 +20,35 @@ public class UserController {
 
     private final UserService userService;
 
-
-
     @PostMapping
-    public String register(@ModelAttribute User user, Model model){
-        User savedUser =  userService.register(user);
-        if(savedUser==null){
+    public String register(@ModelAttribute User user, Model model) {
+        User savedUser = userService.register(user);
+        if (savedUser == null) {
             return "index"; //todo
-        }else {
+        } else {
             return "registerSuccess";
         }
     }
 
     @GetMapping("/verify")
-    public String verify(@RequestParam (name = "id")int userId,
-                         @RequestParam(name = "verificationCode")String verificationCode,
-                         Model model){
-        boolean isVerified =  userService.verfy(userId, verificationCode);
-        if(isVerified){
+    public String verify(@RequestParam(name = "id") int userId,
+                         @RequestParam(name = "verificationCode") String verificationCode,
+                         Model model) {
+        boolean isVerified = userService.verfy(userId, verificationCode);
+        if (isVerified) {
             User currentUser = userService.userById(userId);
             model.addAttribute("currentUser", currentUser);
-            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(currentUser.getEmail(), currentUser.getPassword() ));
+            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(currentUser.getEmail(), currentUser.getPassword()));
             return "redirect:/user/home";
-        }else {
+        } else {
             return "verifyError";
         }
     }
 
     @GetMapping("/home")
     public String userHome(@AuthenticationPrincipal CurrentUser currentUser,
-                           Model model){
-        if(currentUser.getUser().isAdmin()){
+                           Model model) {
+        if (currentUser.getUser().isAdmin()) {
             return "redirect:/admin/home";
         }
         model.addAttribute("currentUser", currentUser.getUser());

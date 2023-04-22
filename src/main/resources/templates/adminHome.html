@@ -12,5 +12,12 @@ Welcome
 <p th:text="${currentUser.name}"></p>
 <p th:text="${currentUser.surname}"></p>
 
+<p> Add Group:
+<form  th:action="@{/group}" method="post" th:object="${newGroup}">
+    <input type="text" placeholder="Name" th:field="*{name}"> </br>
+    <button type="submit">Add</button>
+</form>
+</p>
+
 </body>
 </html>

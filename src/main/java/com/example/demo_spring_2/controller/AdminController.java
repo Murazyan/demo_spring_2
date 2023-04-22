@@ -1,5 +1,6 @@
 package com.example.demo_spring_2.controller;
 
+import com.example.demo_spring_2.models.Group;
 import com.example.demo_spring_2.security.CurrentUser;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AdminController {
 
     @GetMapping("/home")
-//    @PreAuthorize("hasAuthority('ADMIN')")
     public String userHome(@AuthenticationPrincipal CurrentUser currentUser,
                            Model model){
         model.addAttribute("currentUser", currentUser.getUser());
+        model.addAttribute("newGroup", new Group());
         return "adminHome";
     }
+
+
 }
