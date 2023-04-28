@@ -8,4 +8,6 @@ public interface UserService {
     boolean verfy(int userId, String verificationCode);
 
     User userById(int userId);
+
+    User addUser(User user);
 }

@@ -5,19 +5,63 @@
     <title>DemoSpring</title>
 </head>
 <body>
-<p style="color: red" th:if="${param.errorType!=null &&  param.errorType[0]=='accessDenied'}" >Sorry you do not have access</p>
+<p style="color: red" th:if="${param.errorType!=null &&  param.errorType[0]=='accessDenied'}">Sorry you do not have
+    access</p>
 Admin home page<br>
-<a  th:href="${'/logout'}">LogOut</a>
+<a th:href="${'/logout'}">LogOut</a>
 Welcome
 <p th:text="${currentUser.name}"></p>
 <p th:text="${currentUser.surname}"></p>
 
-<p> Add Group:
-<form  th:action="@{/group}" method="post" th:object="${newGroup}">
+<div>
+    <p> Add Group:
+    <form th:action="@{/group}" method="post" th:object="${newGroup}">
+        <input type="text" placeholder="Name" th:field="*{name}"> </br>
+    <p style="color: red" th:if="${groupSaveError}" th:text="${groupSaveError}"></p>
+        <button type="submit">Add group</button>
+    </form>
+    </p>
+</div>
+
+
+<div>
+    <p> Add Student:
+    <form th:action="@{/admin/user}" method="post" th:object="${newStudent}">
     <input type="text" placeholder="Name" th:field="*{name}"> </br>
-    <button type="submit">Add</button>
-</form>
-</p>
+    <input type="text" placeholder="Surname" th:field="*{surname}"> </br>
+    <input type="email" placeholder="Email" th:field="*{email}"> </br>
+    <label>Gender:</label>
+    <input type="radio" th:field="*{gender}" value="MALE"/>Male
+    <input type="radio" th:field="*{gender}" value="FEMALE"/>Female<br/> </br>
+    <button type="submit">Add user</button>
+    </form>
+    </p>
+</div>
+
+<div>
+    <p>
+        All groups:
+    <table border="1">
+        <thead>
+        <tr>
+            <th >Group id</th>
+            <th >Group Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="group, iStat : ${groups.getGroups()}">
+            <td th:text="${group.id}"/>
+            <td th:text="${group.name}"/>
+        </tr>
+        </tbody>
+    </table>
+    <div th:if="${groups.getPage() > 0}" class="pagination"
+         th:each="pageNumber : ${pageNumbers}">
+        <a style="float: left; margin-right: 5px" th:href="@{/admin/home(groupSize=4, groupPage=${pageNumber})}"
+           th:text="${pageNumber}"></a>
+    </div>
+    </p>
+</div>
 
 </body>
 </html>

@@ -1,13 +1,12 @@
 package com.example.demo_spring_2.service.impl;
 
+import com.example.demo_spring_2.events.UserAddEvent;
 import com.example.demo_spring_2.events.UserRegisteredEvent;
-import com.example.demo_spring_2.models.Role;
 import com.example.demo_spring_2.models.User;
 import com.example.demo_spring_2.repositories.RoleRepository;
 import com.example.demo_spring_2.repositories.UserRepository;
 import com.example.demo_spring_2.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -53,4 +52,21 @@ public class UserServiceImpl implements UserService {
     public User userById(int userId) {
         return userRepository.getReferenceById(userId);
     }
+
+    @Override
+    public User addUser(User user) {
+        if(userRepository.existsByEmail(user.getEmail())){
+            return null;
+        }else {
+
+            String password = appUtil.generateRandomString(6);
+            user.setRoles(List.of(roleRepository.findByName("user").get()));
+            user.setPassword(passwordEncoder.encode(password));
+            user.setVerificationCode(appUtil.generateRandomString(6));
+            user =  userRepository.save(user);
+            applicationEventPublisher.publishEvent(new UserAddEvent(this, user, password));
+            return user;
+        }
+    }
+
 }

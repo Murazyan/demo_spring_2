@@ -34,7 +34,7 @@ public class User {
     @NotBlank(message = "User surname is required")
     private String surname;
 
-    @Email
+    @Email(message = "Invalid email format")
     @Column(name = "email", unique = true)
     private String email;
 
@@ -42,7 +42,6 @@ public class User {
     private String verificationCode;
 
     @Column
-    @NotBlank(message = "User password is required")
     private String password;
 
     @Column

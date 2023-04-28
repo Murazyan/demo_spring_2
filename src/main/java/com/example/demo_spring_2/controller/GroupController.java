@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @RequiredArgsConstructor
@@ -18,13 +20,15 @@ public class GroupController {
 
     @RequestMapping(method = RequestMethod.POST)
     @PreAuthorize("hasAuthority('ADMIN')")
-    public String addGroup(@ModelAttribute Group group){
-        if(groupService.save(group)==null){//todo
-            //վերադարձնել նույն էջ, բայց ցույց տալ տեքստ, որ այդ անունով գրուպա արդեն կա
+    public RedirectView addGroup(@ModelAttribute Group group,
+                           RedirectAttributes attributes){
+        if(groupService.save(group)==null){
+            attributes.addAttribute("groupSaveError", "Group already exist");
 
-        }return "redirect:/admin/home";
+        }return new RedirectView("/admin/home");
 
     }
+
 
 
 }
