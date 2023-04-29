@@ -1,5 +1,6 @@
 package com.example.demo_spring_2.service;
 
+import com.example.demo_spring_2.dto.response.UserResponse;
 import com.example.demo_spring_2.models.User;
 
 public interface UserService {
@@ -10,4 +11,8 @@ public interface UserService {
     User userById(int userId);
 
     User addUser(User user);
+
+    UserResponse getUsers(int page, int elementCount);
+
+    void delete(int id);
 }

@@ -17,7 +17,7 @@ Welcome
     <p> Add Group:
     <form th:action="@{/group}" method="post" th:object="${newGroup}">
         <input type="text" placeholder="Name" th:field="*{name}"> </br>
-    <p style="color: red" th:if="${groupSaveError}" th:text="${groupSaveError}"></p>
+        <p style="color: red" th:if="${groupSaveError}" th:text="${groupSaveError}"></p>
         <button type="submit">Add group</button>
     </form>
     </p>
@@ -27,25 +27,30 @@ Welcome
 <div>
     <p> Add Student:
     <form th:action="@{/admin/user}" method="post" th:object="${newStudent}">
-    <input type="text" placeholder="Name" th:field="*{name}"> </br>
-    <input type="text" placeholder="Surname" th:field="*{surname}"> </br>
-    <input type="email" placeholder="Email" th:field="*{email}"> </br>
-    <label>Gender:</label>
-    <input type="radio" th:field="*{gender}" value="MALE"/>Male
-    <input type="radio" th:field="*{gender}" value="FEMALE"/>Female<br/> </br>
-    <button type="submit">Add user</button>
+        <input type="text" placeholder="Name" th:field="*{name}"> </br>
+        <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+
+        <input type="text" placeholder="Surname" th:field="*{surname}"> </br>
+        <p th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></p>
+        <input type="email" placeholder="Email" th:field="*{email}"> </br>
+        <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+
+        <label>Gender:</label>
+        <input type="radio" th:field="*{gender}" value="MALE"/>Male
+        <input type="radio" th:field="*{gender}" value="FEMALE"/>Female<br/> </br>
+        <button type="submit">Add user</button>
     </form>
     </p>
 </div>
 
-<div>
+<div class="all-groups">
     <p>
         All groups:
     <table border="1">
         <thead>
         <tr>
-            <th >Group id</th>
-            <th >Group Name</th>
+            <th>Group id</th>
+            <th>Group Name</th>
         </tr>
         </thead>
         <tbody>
@@ -56,12 +61,76 @@ Welcome
         </tbody>
     </table>
     <div th:if="${groups.getPage() > 0}" class="pagination"
-         th:each="pageNumber : ${pageNumbers}">
+         th:each="pageNumber : ${groupPageNumbers}">
         <a style="float: left; margin-right: 5px" th:href="@{/admin/home(groupSize=4, groupPage=${pageNumber})}"
            th:text="${pageNumber}"></a>
     </div>
     </p>
 </div>
 
+<div class="all-users" id="users-block">
+    <p>
+        All Users:
+    <table border="1" id="user-table">
+        <thead>
+        <tr>
+            <th>User id</th>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Email</th>
+            <th>Gender</th>
+            <th>Locked</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody id="users-block-body">
+        <tr th:each="user, iStat : ${users.getUsers()}">
+            <td th:text="${user.id}"/>
+            <td th:text="${user.name}"/>
+            <td th:text="${user.surname}"/>
+            <td th:text="${user.email}"/>
+            <td th:text="${user.gender}"/>
+            <td th:text="${user.locked}"/>
+            <td title="Delete" style="cursor: pointer"
+                th:attr="onclick=|deleteUser('${user.id}', '${iStat.index}')|">X
+            </td>
+
+        </tr>
+        </tbody>
+    </table>
+    <div th:if="${users.getPage() > 0}" class="pagination"
+         th:each="pageNumber : ${usersPageNumbers}">
+        <label style="float: left; margin-right: 10px; cursor: pointer"
+               th:attr="onclick=|updateUserTable(4,'${pageNumber}')|"
+               th:text="${pageNumber}"></label>
+    </div>
+    </p>
+</div>
 </body>
+<script>
+    async function updateUserTable(pageSize, pageNumber) {
+        const response = await fetch('http://localhost:8080/admin/user-table?' + new URLSearchParams({
+            userPage: pageNumber,
+            userSize: pageSize
+        }))
+
+        const data = await response.text();
+        document.getElementById('users-block').innerHTML = data;
+    }
+
+
+    function deleteUser(userId, rowNumber) {
+        fetch('http://localhost:8080/admin/user/' + userId, {
+            method: 'DELETE'
+            // body: JSON.stringify({ "id": userId })
+        })
+            .then(response => {
+                if (response.status == 200) {
+                    const children = document.getElementById('users-block-body').children;
+                    console.log(children)
+                   children.item(rowNumber).remove();
+                }
+            })
+    }
+</script>
 </html>

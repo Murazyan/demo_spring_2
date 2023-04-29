@@ -1,13 +1,19 @@
 package com.example.demo_spring_2.service.impl;
 
+import com.example.demo_spring_2.dto.response.GroupResponse;
+import com.example.demo_spring_2.dto.response.UserResponse;
 import com.example.demo_spring_2.events.UserAddEvent;
 import com.example.demo_spring_2.events.UserRegisteredEvent;
+import com.example.demo_spring_2.models.Group;
 import com.example.demo_spring_2.models.User;
 import com.example.demo_spring_2.repositories.RoleRepository;
 import com.example.demo_spring_2.repositories.UserRepository;
 import com.example.demo_spring_2.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -67,6 +73,19 @@ public class UserServiceImpl implements UserService {
             applicationEventPublisher.publishEvent(new UserAddEvent(this, user, password));
             return user;
         }
+    }
+
+    @Override
+    public UserResponse getUsers(int page, int elementCount) {
+        Page<User> pageOfGroups = userRepository.findAll(PageRequest.of(page, elementCount, Sort.by("id").ascending()));
+        List<User> content = pageOfGroups.getContent();
+        int totalPages = pageOfGroups.getTotalPages();
+        return new UserResponse(totalPages, content);
+    }
+
+    @Override
+    public void delete(int id) {
+        userRepository.deleteById(id);
     }
 
 }
