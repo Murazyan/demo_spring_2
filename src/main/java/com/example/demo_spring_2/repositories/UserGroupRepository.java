@@ -14,5 +14,6 @@ import java.util.List;
 public interface UserGroupRepository extends JpaRepository<UserGroup, Integer> {
 
     Page<UserGroup> findAllByUserAndState(User user, UserGroupState state, Pageable pageable);
+    Page<UserGroup> findAllByState(UserGroupState state, Pageable pageable);
     List<UserGroup> findAllByUser(User user);
 }

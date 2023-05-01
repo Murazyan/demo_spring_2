@@ -1,6 +1,7 @@
 package com.example.demo_spring_2.service.impl;
 
 import com.example.demo_spring_2.dto.response.GroupResponse;
+import com.example.demo_spring_2.dto.response.UserGroupResponse;
 import com.example.demo_spring_2.models.Group;
 import com.example.demo_spring_2.models.User;
 import com.example.demo_spring_2.models.UserGroup;
@@ -42,5 +43,16 @@ public class UserGroupServiceImpl implements UserGroupService {
                 groupRepository.findAllByIdNotIn(participatedGroupsId,
                 PageRequest.of(page, elementCount,Sort.by("id").ascending()));
         return new GroupResponse(data.getTotalPages(), data.getContent());
+    }
+
+    @Override
+    public void add(UserGroup userGroup) {
+        userGroupRepository.save(userGroup);
+    }
+
+    @Override
+    public UserGroupResponse waitingGroupRequestsForAdmin(int page, int elementCount) {
+        Page<UserGroup> data = userGroupRepository.findAllByState(UserGroupState.WAITING, PageRequest.of(page, elementCount, Sort.by("id").ascending()));
+        return new UserGroupResponse(data.getTotalPages(), data.getContent());
     }
 }

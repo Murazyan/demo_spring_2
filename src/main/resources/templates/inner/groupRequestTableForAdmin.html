@@ -1,0 +1,39 @@
+<p>
+  Waiting request for joining to group:
+<table border="1" id="group-requests">
+  <thead>
+  <tr>
+    <th>User id</th>
+    <th>Name</th>
+    <th>Surname</th>
+    <th>Email</th>
+    <th>Group Id</th>
+    <th>Group Name</th>
+    <th>Approve</th>
+    <th>Delete</th>
+  </tr>
+  </thead>
+  <tbody id="group-request-block-body">
+  <tr th:each="req, iStat : ${waitingGroupRequests.getRequests()}">
+    <td th:text="${req.user.id}"/>
+    <td th:text="${req.user.name}"/>
+    <td th:text="${req.user.surname}"/>
+    <td th:text="${req.user.email}"/>
+    <td th:text="${req.group.id}"/>
+    <td th:text="${req.group.name}"/>
+    <td title="Approve" style="cursor: pointer"
+        th:attr="onclick=|groupRequest('${req.group.id}', '${req.user.id}', true, '${iStat.index}')|">+
+    </td>
+    <td  title="Reject" style="cursor: pointer"
+         th:attr="onclick=|groupRequest('${req.group.id}', '${req.user.id}', false, '${iStat.index}')|">X
+    </td>
+  </tr>
+  </tbody>
+</table>
+<div th:if="${waitingGroupRequests.getPage() > 0}" class="pagination"
+     th:each="pageNumber : ${waitingGroupRequestsPageNumbers}">
+  <label style="float: left; margin-right: 10px; cursor: pointer"
+         th:attr="onclick=|updateGroupRequestTable(4,'${pageNumber}')|"
+         th:text="${pageNumber}"></label>
+</div>
+</p>

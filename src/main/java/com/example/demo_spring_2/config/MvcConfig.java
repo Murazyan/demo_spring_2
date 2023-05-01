@@ -10,14 +10,20 @@
 //@EnableWebMvc
 //public class MvcConfig implements WebMvcConfigurer {
 //
-//    @Value("${user.image.path}")
-//    private String userImagesFolder;
+////    @Value("${user.image.path}")
+////    private String userImagesFolder;
+//
 //    @Override
 //    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//        registry
-//          .addResourceHandler("/user/image/**")
-//                .addResourceLocations("file:C:\\Users\\Admin\\Desktop\\spring_image\\");
 //
-////        registry.addResourceLocations(userImagesFolder);
+////        registry
+////                .addResourceHandler("/user/image/**")
+////                .addResourceLocations("file:C:\\Users\\Admin\\Desktop\\spring_image\\");
+//        registry
+//                .addResourceHandler("/resources/**")
+//                .addResourceLocations("/resources/");
+//
 //    }
+//
+//
 //}

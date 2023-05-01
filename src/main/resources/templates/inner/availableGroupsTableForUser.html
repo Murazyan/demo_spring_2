@@ -1,0 +1,28 @@
+<p>
+    All groups:
+<table border="1">
+    <thead>
+    <tr>
+        <th>Group id</th>
+        <th>Name</th>
+        <th>Join</th>
+    </tr>
+    </thead>
+    <tbody id="users-block-body">
+    <tr th:each="group, iStat : ${availableGroups.getGroups()}">
+        <td th:text="${group.id}"/>
+        <td th:text="${group.name}"/>
+
+        <td title="Leave" style="cursor: pointer"
+            th:attr="onclick=|joinToGroup('${group.id}', '${iStat.index}')|">+
+        </td>
+    </tr>
+    </tbody>
+</table>
+<div th:if="${availableGroups.getPage() > 0}" class="pagination"
+     th:each="pageNumber : ${availableGroupsPageNumbers}">
+    <label style="float: left; margin-right: 10px; cursor: pointer"
+           th:attr="onclick=|updateAvailableGroupTable(4,'${pageNumber}')|"
+           th:text="${pageNumber}"></label>
+</div>
+</p>

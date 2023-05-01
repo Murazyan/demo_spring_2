@@ -2,15 +2,18 @@ package com.example.demo_spring_2.controller;
 
 import com.example.demo_spring_2.dto.request.UserLockedRequest;
 import com.example.demo_spring_2.dto.response.GroupResponse;
+import com.example.demo_spring_2.dto.response.UserGroupResponse;
 import com.example.demo_spring_2.dto.response.UserResponse;
 import com.example.demo_spring_2.models.Group;
 import com.example.demo_spring_2.models.User;
 import com.example.demo_spring_2.security.CurrentUser;
 import com.example.demo_spring_2.service.GroupService;
+import com.example.demo_spring_2.service.UserGroupService;
 import com.example.demo_spring_2.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +33,7 @@ import java.util.stream.IntStream;
 public class AdminController {
 
     private final GroupService groupService;
+    private final UserGroupService userGroupService;
     private final UserService userService;
 
     @GetMapping("/home")
@@ -55,6 +59,16 @@ public class AdminController {
                     .collect(Collectors.toList());
             model.addAttribute("usersPageNumbers", pageNumbers);
         }
+
+        UserGroupResponse available = userGroupService.waitingGroupRequestsForAdmin(0, 4);
+        model.addAttribute("waitingGroupRequests", available);
+        if (available.getPage() > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, available.getPage())
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("waitingGroupRequestsPageNumbers", pageNumbers);
+        }
+
         model.addAttribute("groupSaveError", groupSaveError);
         model.addAttribute("currentUser", currentUser.getUser());
         model.addAttribute("newGroup", new Group());
@@ -108,5 +122,23 @@ public class AdminController {
         return ResponseEntity.ok().body("successfully updated");
     }
 
+
+    @GetMapping("/waiting-group-requests")
+    public String availableGroups(@AuthenticationPrincipal CurrentUser currentUser,
+                                  @RequestParam(value = "requestPage", required = false, defaultValue = "1") int requestPage,
+                                  @RequestParam(value = "requestSize", required = false, defaultValue = "4") int requestSize,
+                                  Model model) {
+
+        UserGroupResponse available = userGroupService.waitingGroupRequestsForAdmin(requestPage-1, requestSize);
+        model.addAttribute("waitingGroupRequests", available);
+        if (available.getPage() > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, available.getPage())
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("waitingGroupRequestsPageNumbers", pageNumbers);
+        }
+        return "inner/groupRequestTableForAdmin";
+
+    }
 
 }

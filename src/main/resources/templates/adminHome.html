@@ -5,6 +5,7 @@
     <title>DemoSpring</title>
     <script >
         let userBlockPage = 1;
+        let groupRequestPage = 1;
 
         async function updateUserTable(pageSize, pageNumber) {
             const response = await fetch('http://localhost:8080/admin/user-table?' + new URLSearchParams({
@@ -19,6 +20,18 @@
         }
 
 
+        async function updateGroupRequestTable(pageSize, pageNumber) {
+            const response = await fetch('http://localhost:8080/admin/waiting-group-requests?' + new URLSearchParams({
+                requestPage: pageNumber,
+                requestSize: pageSize
+            }))
+
+            const data = await response.text();
+            const userBlock = document.getElementById('waiting-requests');
+            userBlock.innerHTML = data;
+            groupRequestPage = pageNumber;
+        }
+
         function deleteUser(userId, rowNumber) {
             fetch('http://localhost:8080/admin/user/' + userId, {
                 method: 'DELETE'
@@ -32,7 +45,6 @@
                     }
                 })
         }
-
 
         function updateUser(userId, rowNumber) {
             fetch('http://localhost:8080/admin/user', {
@@ -52,8 +64,6 @@
 
         }
 
-
-
     </script>
 </head>
 <body style="background-color: azure">
@@ -62,10 +72,9 @@
 Admin home page<br>
 <a th:href="${'/logout'}" style="right: 5px; position: absolute;">LogOut</a>
 Welcome
-<p th:text="${currentUser.name}"></p>
-<p th:text="${currentUser.surname}"></p>
+<p th:text="${currentUser.name+' '+currentUser.surname}"></p>
 
-<div>
+<div class="add-group">
     <p> Add Group:
     <form th:action="@{/group}" method="post" th:object="${newGroup}">
         <input type="text" placeholder="Name" th:field="*{name}"> </br>
@@ -75,8 +84,7 @@ Welcome
     </p>
 </div>
 
-
-<div>
+<div class="add-student">
     <p> Add Student:
     <form th:action="@{/admin/user}" method="post" th:object="${newStudent}">
         <input type="text" placeholder="Name" th:field="*{name}"> </br>
@@ -162,6 +170,49 @@ Welcome
          th:each="pageNumber : ${usersPageNumbers}">
         <label style="float: left; margin-right: 10px; cursor: pointer"
                th:attr="onclick=|updateUserTable(4,'${pageNumber}')|"
+               th:text="${pageNumber}"></label>
+    </div>
+    </p>
+</div>
+
+-----------------------------------------------------------------------------------------
+<div class="waiting-requests" id="waiting-requests" th:if="${waitingGroupRequests.getPage() > 0}">
+    <p>
+        Waiting request for joining to group:
+    <table border="1" id="group-requests">
+        <thead>
+        <tr>
+            <th>User id</th>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Email</th>
+            <th>Group Id</th>
+            <th>Group Name</th>
+            <th>Approve</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody id="group-request-block-body">
+        <tr th:each="req, iStat : ${waitingGroupRequests.getRequests()}">
+            <td th:text="${req.user.id}"/>
+            <td th:text="${req.user.name}"/>
+            <td th:text="${req.user.surname}"/>
+            <td th:text="${req.user.email}"/>
+            <td th:text="${req.group.id}"/>
+            <td th:text="${req.group.name}"/>
+            <td title="Approve" style="cursor: pointer"
+                th:attr="onclick=|groupRequest('${req.group.id}', '${req.user.id}', true, '${iStat.index}')|">+
+            </td>
+            <td  title="Reject" style="cursor: pointer"
+                th:attr="onclick=|groupRequest('${req.group.id}', '${req.user.id}', false, '${iStat.index}')|">X
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div th:if="${waitingGroupRequests.getPage() > 0}" class="pagination"
+         th:each="pageNumber : ${waitingGroupRequestsPageNumbers}">
+        <label style="float: left; margin-right: 10px; cursor: pointer"
+               th:attr="onclick=|updateGroupRequestTable(4,'${pageNumber}')|"
                th:text="${pageNumber}"></label>
     </div>
     </p>

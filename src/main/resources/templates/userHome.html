@@ -5,15 +5,17 @@
     <title>DemoSpring</title>
 </head>
 <body>
-<p style="color: red" th:if="${param.errorType!=null &&  param.errorType[0]=='accessDenied'}" >Sorry you do not have access</p>
+<p style="color: red" th:if="${param.errorType!=null &&  param.errorType[0]=='accessDenied'}">Sorry you do not have
+    access</p>
 Welcome
 <p th:text="${currentUser.name + ' ' +currentUser.surname}"></p>
-<a  th:href="${'/logout'}" style="right: 5px; position: absolute; top: 5px">LogOut</a>
+<a th:href="${'/logout'}" style="right: 5px; position: absolute; top: 5px">LogOut</a>
 
 
-<div  th:if="${participatedGroups.getPage() > 0}" class="participated-groups" id="participated-groups-block" style="right: 20px; position: absolute;top: 50px">
+<div th:if="${participatedGroups.getPage() > 0}" class="participated-groups" id="participated-groups-block"
+     style="right: 20px; position: absolute;top: 50px">
     <p>
-        M Groups:
+        My Groups:
     <table border="1" id="user-table">
         <thead>
         <tr>
@@ -27,7 +29,7 @@ Welcome
             <td th:text="${group.id}"/>
             <td th:text="${group.name}"/>
 
-            <td  title="Leave" style="cursor: pointer"
+            <td title="Leave" style="cursor: pointer"
                 th:attr="onclick=|leaveGroup('${group.id}', '${iStat.index}')|">-
             </td>
         </tr>
@@ -42,10 +44,11 @@ Welcome
     </p>
 </div>
 
-<div  th:if="${availableGroups.getPage() > 0}" class="available-groups" id="available-groups-block" style="right: 20px; position: absolute;">
+<div th:if="${availableGroups.getPage() > 0}" class="available-groups" id="available-groups-block"
+     style="right: 20px; position: absolute;">
     <p>
         All groups:
-    <table border="1" >
+    <table border="1">
         <thead>
         <tr>
             <th>Group id</th>
@@ -58,8 +61,8 @@ Welcome
             <td th:text="${group.id}"/>
             <td th:text="${group.name}"/>
 
-            <td  title="Leave" style="cursor: pointer"
-                 th:attr="onclick=|joinToGroup('${group.id}', '${iStat.index}')|">+
+            <td title="Leave" style="cursor: pointer"
+                th:attr="onclick=|joinToGroup('${group.id}', '${iStat.index}')|">+
             </td>
         </tr>
         </tbody>
@@ -73,6 +76,40 @@ Welcome
     </p>
 </div>
 
+<script>
+    let availableGroupPage = 1;
 
+
+    function joinToGroup(groupId, rowNumber) {
+        fetch('http://localhost:8080/user-group', {
+            method: 'POST',
+            body: JSON.stringify({"groupId": groupId}),
+            headers: {
+                "Content-Type": "application/json",
+            }
+
+        })
+            .then(response => {
+                if (response.status != 200) {
+                    alert("error")
+                } else {
+                    updateAvailableGroupTable(4, availableGroupPage)
+                }
+            })
+
+    }
+
+    async function updateAvailableGroupTable(pageSize, pageNumber) {
+        const response = await fetch('http://localhost:8080/user-group/available?' + new URLSearchParams({
+            groupPage: pageNumber,
+            groupSize: pageSize
+        }))
+
+        const data = await response.text();
+        const userBlock = document.getElementById('available-groups-block');
+        userBlock.innerHTML = data;
+        availableGroupPage = pageNumber;
+    }
+</script>
 </body>
 </html>
