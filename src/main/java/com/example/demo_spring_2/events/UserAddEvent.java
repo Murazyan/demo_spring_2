@@ -15,4 +15,8 @@ public class UserAddEvent extends ApplicationEvent {
     public User getUser() {
         return user;
     }
+
+    public String getPassword() {
+        return password;
+    }
 }

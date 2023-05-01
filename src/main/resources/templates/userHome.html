@@ -6,10 +6,73 @@
 </head>
 <body>
 <p style="color: red" th:if="${param.errorType!=null &&  param.errorType[0]=='accessDenied'}" >Sorry you do not have access</p>
-<p>User home page</p>
-<a  th:href="${'/logout'}">LogOut</a>
 Welcome
-<p th:text="${currentUser.name}"></p>
-<p th:text="${currentUser.surname}"></p>
+<p th:text="${currentUser.name + ' ' +currentUser.surname}"></p>
+<a  th:href="${'/logout'}" style="right: 5px; position: absolute; top: 5px">LogOut</a>
+
+
+<div  th:if="${participatedGroups.getPage() > 0}" class="participated-groups" id="participated-groups-block" style="right: 20px; position: absolute;top: 50px">
+    <p>
+        M Groups:
+    <table border="1" id="user-table">
+        <thead>
+        <tr>
+            <th>Group id</th>
+            <th>Name</th>
+            <th>Leave</th>
+        </tr>
+        </thead>
+        <tbody id="participated-groups-block-body">
+        <tr th:each="group, iStat : ${participatedGroups.getGroups()}">
+            <td th:text="${group.id}"/>
+            <td th:text="${group.name}"/>
+
+            <td  title="Leave" style="cursor: pointer"
+                th:attr="onclick=|leaveGroup('${group.id}', '${iStat.index}')|">-
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div th:if="${participatedGroups.getPage() > 0}" class="pagination"
+         th:each="pageNumber : ${participatedGroupsPageNumbers}">
+        <label style="float: left; margin-right: 10px; cursor: pointer"
+               th:attr="onclick=|updateParticipatedGroupTable(4,'${pageNumber}')|"
+               th:text="${pageNumber}"></label>
+    </div>
+    </p>
+</div>
+
+<div  th:if="${availableGroups.getPage() > 0}" class="available-groups" id="available-groups-block" style="right: 20px; position: absolute;">
+    <p>
+        All groups:
+    <table border="1" >
+        <thead>
+        <tr>
+            <th>Group id</th>
+            <th>Name</th>
+            <th>Join</th>
+        </tr>
+        </thead>
+        <tbody id="users-block-body">
+        <tr th:each="group, iStat : ${availableGroups.getGroups()}">
+            <td th:text="${group.id}"/>
+            <td th:text="${group.name}"/>
+
+            <td  title="Leave" style="cursor: pointer"
+                 th:attr="onclick=|joinToGroup('${group.id}', '${iStat.index}')|">+
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div th:if="${availableGroups.getPage() > 0}" class="pagination"
+         th:each="pageNumber : ${availableGroupsPageNumbers}">
+        <label style="float: left; margin-right: 10px; cursor: pointer"
+               th:attr="onclick=|updateAvailableGroupTable(4,'${pageNumber}')|"
+               th:text="${pageNumber}"></label>
+    </div>
+    </p>
+</div>
+
+
 </body>
 </html>

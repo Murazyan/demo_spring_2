@@ -1,5 +1,6 @@
 package com.example.demo_spring_2.controller;
 
+import com.example.demo_spring_2.dto.request.UserLockedRequest;
 import com.example.demo_spring_2.dto.response.GroupResponse;
 import com.example.demo_spring_2.dto.response.UserResponse;
 import com.example.demo_spring_2.models.Group;
@@ -79,9 +80,11 @@ public class AdminController {
 
     @GetMapping("/user-table")
     public String getUsersTableForAdmin(
+            @AuthenticationPrincipal CurrentUser currentUser,
             @RequestParam(value = "userPage", required = false, defaultValue = "1") int userPage,
             @RequestParam(value = "userSize", required = false, defaultValue = "4") int userSize,
             Model model){
+        model.addAttribute("currentUser", currentUser.getUser());
         UserResponse users = userService.getUsers(userPage-1, userSize);
         model.addAttribute("users", users);
         if (users.getPage() > 0) {
@@ -97,6 +100,12 @@ public class AdminController {
     public ResponseEntity deleteUser(@PathVariable(name = "id")int id){
         userService.delete(id);
         return ResponseEntity.ok().body("successfully deleted");
+    }
+
+    @PutMapping("/user")
+    public ResponseEntity updateUserLockedStatus(@RequestBody UserLockedRequest request){
+        userService.updateLockedStatus(request.getId(), request.isLocked());
+        return ResponseEntity.ok().body("successfully updated");
     }
 
 

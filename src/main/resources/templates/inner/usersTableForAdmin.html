@@ -10,6 +10,7 @@
     <th>Gender</th>
     <th>Locked</th>
     <th>Delete</th>
+    <th>Update</th>
   </tr>
   </thead>
   <tbody id="users-block-body">
@@ -19,10 +20,18 @@
     <td th:text="${user.surname}"/>
     <td th:text="${user.email}"/>
     <td th:text="${user.gender}"/>
-    <td th:text="${user.locked}"/>
-    <td title="Delete" style="cursor: pointer"
-        th:attr="onclick=|deleteUser('${user.id}', '${iStat.index}')|">X</td>
-
+    <td>
+      <select th:id="${'user-locked-'+user.id}">
+        <option th:selected="${user.locked==false}" th:value="'false'" th:text="Available"></option>
+        <option th:selected="${user.locked==true}" th:value="'true'" th:text="Locked"></option>
+      </select>
+    </td>
+    <td th:if="${currentUser.id!=user.id}" title="Delete" style="cursor: pointer"
+        th:attr="onclick=|deleteUser('${user.id}', '${iStat.index}')|">X
+    </td>
+    <td th:if="${currentUser.id!=user.id}" title="Update" style="cursor: pointer"
+        th:attr="onclick=|updateUser('${user.id}', '${iStat.index}')|">V
+    </td>
   </tr>
   </tbody>
 </table>

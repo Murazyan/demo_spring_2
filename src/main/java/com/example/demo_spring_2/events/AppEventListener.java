@@ -24,6 +24,12 @@ public class AppEventListener {
         sendVerificationEmail(event.getUser());
     }
 
+
+    @EventListener
+    public void handeUserRegisterEvent(UserAddEvent event) {
+        sendStudentPassword(event.getUser().getEmail(), event.getPassword());
+    }
+
     @SneakyThrows
     private void sendVerificationEmail(User user) {
 
@@ -32,6 +38,12 @@ public class AppEventListener {
 
         String body = String.format("Welcome our application %s: Click %s to verify your account", user.getName(), link);
         emailService.sendEmail(user.getEmail(), "Account Verification", body);
+    }
+
+    @SneakyThrows
+    private void sendStudentPassword(String email, String password) {
+        String body = "Welcome our application. Your password: "+password;
+        emailService.sendEmail(email, "Account credentials", body);
     }
 
 }

@@ -3,12 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <title>DemoSpring</title>
+    <script >
+        let userBlockPage = 1;
+
+        async function updateUserTable(pageSize, pageNumber) {
+            const response = await fetch('http://localhost:8080/admin/user-table?' + new URLSearchParams({
+                userPage: pageNumber,
+                userSize: pageSize
+            }))
+
+            const data = await response.text();
+            const userBlock = document.getElementById('users-block');
+            userBlock.innerHTML = data;
+            userBlockPage = pageNumber;
+        }
+
+
+        function deleteUser(userId, rowNumber) {
+            fetch('http://localhost:8080/admin/user/' + userId, {
+                method: 'DELETE'
+                // body: JSON.stringify({ "id": userId })
+            })
+                .then(response => {
+                    if (response.status == 200) {
+                        const children = document.getElementById('users-block-body').children;
+                        console.log(children)
+                        updateUserTable(4, userBlockPage)
+                    }
+                })
+        }
+
+
+        function updateUser(userId, rowNumber) {
+            fetch('http://localhost:8080/admin/user', {
+                method: 'PUT',
+                body: JSON.stringify({ "id": userId,
+                    'locked': document.getElementById('user-locked-'+userId).value}),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+
+            })
+                .then(response => {
+                    if (response.status != 200) {
+                        alert("error")
+                    }
+                })
+
+        }
+
+
+
+    </script>
 </head>
-<body>
+<body style="background-color: azure">
 <p style="color: red" th:if="${param.errorType!=null &&  param.errorType[0]=='accessDenied'}">Sorry you do not have
     access</p>
 Admin home page<br>
-<a th:href="${'/logout'}">LogOut</a>
+<a th:href="${'/logout'}" style="right: 5px; position: absolute;">LogOut</a>
 Welcome
 <p th:text="${currentUser.name}"></p>
 <p th:text="${currentUser.surname}"></p>
@@ -43,7 +95,7 @@ Welcome
     </p>
 </div>
 
-<div class="all-groups">
+<div class="all-groups" style="position: absolute; right: 20px; top: 300px;">
     <p>
         All groups:
     <table border="1">
@@ -68,7 +120,7 @@ Welcome
     </p>
 </div>
 
-<div class="all-users" id="users-block">
+<div class="all-users" id="users-block" style="right: 20px; position: absolute;top: 30px">
     <p>
         All Users:
     <table border="1" id="user-table">
@@ -81,6 +133,7 @@ Welcome
             <th>Gender</th>
             <th>Locked</th>
             <th>Delete</th>
+            <th>Update</th>
         </tr>
         </thead>
         <tbody id="users-block-body">
@@ -90,11 +143,18 @@ Welcome
             <td th:text="${user.surname}"/>
             <td th:text="${user.email}"/>
             <td th:text="${user.gender}"/>
-            <td th:text="${user.locked}"/>
-            <td title="Delete" style="cursor: pointer"
+            <td>
+                <select th:id="${'user-locked-'+user.id}">
+                    <option th:selected="${user.locked==false}" th:value="'false'" th:text="Available"></option>
+                    <option th:selected="${user.locked==true}" th:value="'true'" th:text="Locked"></option>
+                </select>
+            </td>
+            <td th:if="${currentUser.id!=user.id}" title="Delete" style="cursor: pointer"
                 th:attr="onclick=|deleteUser('${user.id}', '${iStat.index}')|">X
             </td>
-
+            <td th:if="${currentUser.id!=user.id}" title="Update" style="cursor: pointer"
+                th:attr="onclick=|updateUser('${user.id}', '${iStat.index}')|">V
+            </td>
         </tr>
         </tbody>
     </table>
@@ -107,33 +167,4 @@ Welcome
     </p>
 </div>
 </body>
-<script>
-    async function updateUserTable(pageSize, pageNumber) {
-        const response = await fetch('http://localhost:8080/admin/user-table?' + new URLSearchParams({
-            userPage: pageNumber,
-            userSize: pageSize
-        }))
-
-        const data = await response.text();
-        const userBlock = document.getElementById('users-block');
-        userBlock.innerHTML = data;
-        userBlockPage = pageNumber;
-    }
-
-
-    function deleteUser(userId, rowNumber) {
-        fetch('http://localhost:8080/admin/user/' + userId, {
-            method: 'DELETE'
-            // body: JSON.stringify({ "id": userId })
-        })
-            .then(response => {
-                if (response.status == 200) {
-                    const children = document.getElementById('users-block-body').children;
-                    console.log(children)
-                    updateUserTable(4,userBlockPage)
-                }
-            })
-    }
-    let userBlockPage = 1;
-</script>
 </html>

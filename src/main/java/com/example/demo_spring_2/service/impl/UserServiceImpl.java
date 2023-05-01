@@ -68,7 +68,6 @@ public class UserServiceImpl implements UserService {
             String password = appUtil.generateRandomString(6);
             user.setRoles(List.of(roleRepository.findByName("user").get()));
             user.setPassword(passwordEncoder.encode(password));
-            user.setVerificationCode(appUtil.generateRandomString(6));
             user =  userRepository.save(user);
             applicationEventPublisher.publishEvent(new UserAddEvent(this, user, password));
             return user;
@@ -86,6 +85,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(int id) {
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public void updateLockedStatus(int id, boolean locked) {
+        userRepository.updateLockedStatus(id, locked);
     }
 
 }

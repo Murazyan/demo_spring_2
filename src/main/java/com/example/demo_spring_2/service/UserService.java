@@ -15,4 +15,6 @@ public interface UserService {
     UserResponse getUsers(int page, int elementCount);
 
     void delete(int id);
+
+    void updateLockedStatus(int id, boolean locked);
 }
