@@ -1,5 +1,6 @@
 package com.example.demo_spring_2.service.impl;
 
+import com.example.demo_spring_2.dto.request.UserGroupRequestStatus;
 import com.example.demo_spring_2.dto.response.GroupResponse;
 import com.example.demo_spring_2.dto.response.UserGroupResponse;
 import com.example.demo_spring_2.models.Group;
@@ -38,7 +39,7 @@ public class UserGroupServiceImpl implements UserGroupService {
     public GroupResponse getAvailableGroups(User user, int page, int elementCount) {
         List<Integer> participatedGroupsId = userGroupRepository.findAllByUser(user)
                 .stream().map(ug -> ug.getGroup().getId()).collect(Collectors.toList());
-        Page<Group> data =participatedGroupsId.isEmpty()?
+        Page<Group> data =participatedGroupsId.isEmpty() ?
                 groupRepository.findAll(PageRequest.of(page, elementCount, Sort.by("id").ascending())):
                 groupRepository.findAllByIdNotIn(participatedGroupsId,
                 PageRequest.of(page, elementCount,Sort.by("id").ascending()));
@@ -52,7 +53,17 @@ public class UserGroupServiceImpl implements UserGroupService {
 
     @Override
     public UserGroupResponse waitingGroupRequestsForAdmin(int page, int elementCount) {
-        Page<UserGroup> data = userGroupRepository.findAllByState(UserGroupState.WAITING, PageRequest.of(page, elementCount, Sort.by("id").ascending()));
+        Page<UserGroup> data = userGroupRepository.findAllByState(UserGroupState.WAITING,
+                PageRequest.of(page, elementCount, Sort.by("id").ascending()));
         return new UserGroupResponse(data.getTotalPages(), data.getContent());
+    }
+
+    @Override
+    public void updateState(UserGroupRequestStatus request) {
+        if(request.isStatus()){
+        userGroupRepository.updateState(request.getGroupId(), request.getUserId(), UserGroupState.APPROVED);
+        }else {
+            userGroupRepository.deleteByUserAndGroup(request.getUserId(), request.getGroupId());
+        }
     }
 }

@@ -64,6 +64,27 @@
 
         }
 
+        function groupRequest(groupId, userId, status){
+            fetch('http://localhost:8080/admin/user-group-state', {
+                method: 'PUT',
+                body: JSON.stringify({
+                    "groupId": groupId,
+                    "userId": userId,
+                    'status': status}),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+
+            })
+                .then(response => {
+                    if (response.status != 200) {
+                        alert("error")
+                    }else {
+                        updateGroupRequestTable(4,groupRequestPage )
+                    }
+                })
+        }
+
     </script>
 </head>
 <body style="background-color: azure">

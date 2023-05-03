@@ -1,5 +1,6 @@
 package com.example.demo_spring_2.controller;
 
+import com.example.demo_spring_2.dto.request.UserGroupRequestStatus;
 import com.example.demo_spring_2.dto.request.UserLockedRequest;
 import com.example.demo_spring_2.dto.response.GroupResponse;
 import com.example.demo_spring_2.dto.response.UserGroupResponse;
@@ -97,9 +98,9 @@ public class AdminController {
             @AuthenticationPrincipal CurrentUser currentUser,
             @RequestParam(value = "userPage", required = false, defaultValue = "1") int userPage,
             @RequestParam(value = "userSize", required = false, defaultValue = "4") int userSize,
-            Model model){
+            Model model) {
         model.addAttribute("currentUser", currentUser.getUser());
-        UserResponse users = userService.getUsers(userPage-1, userSize);
+        UserResponse users = userService.getUsers(userPage - 1, userSize);
         model.addAttribute("users", users);
         if (users.getPage() > 0) {
             List<Integer> pageNumbers = IntStream.rangeClosed(1, users.getPage())
@@ -111,13 +112,13 @@ public class AdminController {
     }
 
     @DeleteMapping("/user/{id}")
-    public ResponseEntity deleteUser(@PathVariable(name = "id")int id){
+    public ResponseEntity deleteUser(@PathVariable(name = "id") int id) {
         userService.delete(id);
         return ResponseEntity.ok().body("successfully deleted");
     }
 
     @PutMapping("/user")
-    public ResponseEntity updateUserLockedStatus(@RequestBody UserLockedRequest request){
+    public ResponseEntity<String> updateUserLockedStatus(@RequestBody UserLockedRequest request) {
         userService.updateLockedStatus(request.getId(), request.isLocked());
         return ResponseEntity.ok().body("successfully updated");
     }
@@ -129,7 +130,7 @@ public class AdminController {
                                   @RequestParam(value = "requestSize", required = false, defaultValue = "4") int requestSize,
                                   Model model) {
 
-        UserGroupResponse available = userGroupService.waitingGroupRequestsForAdmin(requestPage-1, requestSize);
+        UserGroupResponse available = userGroupService.waitingGroupRequestsForAdmin(requestPage - 1, requestSize);
         model.addAttribute("waitingGroupRequests", available);
         if (available.getPage() > 0) {
             List<Integer> pageNumbers = IntStream.rangeClosed(1, available.getPage())
@@ -138,7 +139,12 @@ public class AdminController {
             model.addAttribute("waitingGroupRequestsPageNumbers", pageNumbers);
         }
         return "inner/groupRequestTableForAdmin";
+    }
 
+    @PutMapping("/user-group-state")
+    public ResponseEntity<String> updateGroupRequestState(@RequestBody UserGroupRequestStatus request) {
+        userGroupService.updateState(request);
+        return ResponseEntity.ok().body("successfully updated");
     }
 
 }

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+</head>
+<script >
+
+</script>
+
+<style>
+    input::placeholder {
+        font-weight: bold;
+        opacity: 0.5;
+        color: black;
+    }
+</style>
+<body>
+<div class="profile">
+
+    <form th:action="@{/user/profile}" enctype="multipart/form-data"  method="post" th:object="${profile}">
+        <input type="text" th:placeholder="${currentUser.name}" th:field="*{name}"> </br>
+        <input type="text"   th:placeholder="${currentUser.surname}" th:field="*{surname}"> </br>
+         Email: <div th:text="${currentUser.email}"></div> </br>
+<!--        <input type="password" placeholder="Current Password" th:field="*{currentPassword}"> </br>-->
+<!--        <input type="password" placeholder="New Password" th:field="*{newPassword}"> </br>-->
+        <input type="file" name="avatar" title="Chouse your avatar"><br>
+        <button type="submit">Update</button>
+    </form>
+</div>
+</body>
+</html>

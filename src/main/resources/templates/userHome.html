@@ -3,17 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <title>DemoSpring</title>
+    <style>
+        /* The popup form - hidden by default */
+        .form-popup {
+            display: none;
+            position: fixed;
+            bottom: 200px;
+            right: 15px;
+            border: 3px solid #f1f1f1;
+            z-index: 9;
+        }
+
+        /* Add styles to the form container */
+        .form-container {
+            max-width: 300px;
+            padding: 10px;
+            background-color: white;
+        }
+
+        /* Full-width input fields */
+        .form-container input[type=text], .form-container input[type=password] {
+            width: 100%;
+            padding: 15px;
+            margin: 5px 0 22px 0;
+            border: none;
+            background: #f1f1f1;
+        }
+
+        /* When the inputs get focus, do something */
+        .form-container input[type=text]:focus, .form-container input[type=password]:focus {
+            background-color: #ddd;
+            outline: none;
+        }
+
+        /* Set a style for the submit/login button */
+        .form-container .btn {
+            background-color: #04AA6D;
+            color: white;
+            padding: 16px 20px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom:10px;
+            opacity: 0.8;
+        }
+
+        /* Add a red background color to the cancel button */
+        .form-container .cancel {
+            background-color: red;
+        }
+
+        /* Add some hover effects to buttons */
+        .form-container .btn:hover, .open-button:hover {
+            opacity: 1;
+        }
+
+    </style>
 </head>
 <body>
 <p style="color: red" th:if="${param.errorType!=null &&  param.errorType[0]=='accessDenied'}">Sorry you do not have
     access</p>
 Welcome
 <p th:text="${currentUser.name + ' ' +currentUser.surname}"></p>
+<img style="height: 300px" th:src="${'/user/avatar/'+currentUser.getAvatar()} ">
 <a th:href="${'/logout'}" style="right: 5px; position: absolute; top: 5px">LogOut</a>
+<a th:href="${'/user/profile'}" style="right: 5px; position: absolute; top: 40px">Go to Profile</a>
 
 
 <div th:if="${participatedGroups.getPage() > 0}" class="participated-groups" id="participated-groups-block"
-     style="right: 20px; position: absolute;top: 50px">
+     style="right: 20px; position: absolute;">
     <p>
         My Groups:
     <table border="1" id="user-table">
@@ -21,6 +79,7 @@ Welcome
         <tr>
             <th>Group id</th>
             <th>Name</th>
+            <th>Add News</th>
             <th>Leave</th>
         </tr>
         </thead>
@@ -28,7 +87,7 @@ Welcome
         <tr th:each="group, iStat : ${participatedGroups.getGroups()}">
             <td th:text="${group.id}"/>
             <td th:text="${group.name}"/>
-
+            <td><button  th:attr="onclick=|openForm('${group.id}', '${iStat.index}')|" >Add news</button></td>
             <td title="Leave" style="cursor: pointer"
                 th:attr="onclick=|leaveGroup('${group.id}', '${iStat.index}')|">-
             </td>
@@ -45,7 +104,7 @@ Welcome
 </div>
 
 <div th:if="${availableGroups.getPage() > 0}" class="available-groups" id="available-groups-block"
-     style="right: 20px; position: absolute;">
+     style="left: 20px; position: absolute;">
     <p>
         All groups:
     <table border="1">
@@ -76,9 +135,32 @@ Welcome
     </p>
 </div>
 
+
+<!-- The news add form -->
+<div class="form-popup" id="add-news-form">
+    <form action="/action_page.php" class="form-container">
+        <h1>Add new</h1>
+
+<!--        <label for="email"><b>Email</b></label>-->
+        <input type="text" placeholder="Enter Email" name="email" required>
+
+<!--        <label for="psw"><b>Password</b></label>-->
+        <input type="password" placeholder="Enter Password" name="psw" required>
+
+        <button type="submit" class="btn">Login</button>
+        <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+    </form>
+</div>
+
 <script>
     let availableGroupPage = 1;
+    function openForm() {
+        document.getElementById("add-news-form").style.display = "block";
+    }
 
+    function closeForm() {
+        document.getElementById("add-news-form").style.display = "none";
+    }
 
     function joinToGroup(groupId, rowNumber) {
         fetch('http://localhost:8080/user-group', {

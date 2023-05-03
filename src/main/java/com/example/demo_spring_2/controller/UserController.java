@@ -1,5 +1,6 @@
 package com.example.demo_spring_2.controller;
 
+import com.example.demo_spring_2.dto.request.UserRequest;
 import com.example.demo_spring_2.dto.response.GroupResponse;
 import com.example.demo_spring_2.models.User;
 import com.example.demo_spring_2.models.enums.UserGroupState;
@@ -13,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -79,4 +81,29 @@ public class UserController {
 
         return "userHome";
     }
+
+
+    @GetMapping("/profile")
+    public String userProfile(@AuthenticationPrincipal CurrentUser currentUser,
+                              Model model) {
+        model.addAttribute("currentUser", currentUser.getUser());
+        model.addAttribute("profile", new UserRequest());
+        return "userProfile";
+    }
+
+
+    @PostMapping("/profile")
+    public String userProfile(@AuthenticationPrincipal CurrentUser currentUser,
+                              @ModelAttribute UserRequest request,
+                              @RequestPart(value = "avatar", required = false) MultipartFile multipartFile,
+                              Model model) {
+
+        userService.update(currentUser.getUser(), request);
+        if (multipartFile != null && !multipartFile.isEmpty())
+            userService.saveAvatar(currentUser.getUser(), multipartFile);
+        model.addAttribute("currentUser", currentUser.getUser());
+        model.addAttribute("profile", new UserRequest());
+        return "userProfile";
+    }
+
 }

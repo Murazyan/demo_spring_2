@@ -49,7 +49,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Column
     private boolean locked;
+
+    @Column
+    private String avatar;
 
     @Column
     private LocalDateTime created;

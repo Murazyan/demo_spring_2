@@ -1,7 +1,9 @@
 package com.example.demo_spring_2.service;
 
+import com.example.demo_spring_2.dto.request.UserRequest;
 import com.example.demo_spring_2.dto.response.UserResponse;
 import com.example.demo_spring_2.models.User;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
     User register(User user);
@@ -17,4 +19,8 @@ public interface UserService {
     void delete(int id);
 
     void updateLockedStatus(int id, boolean locked);
+
+    void update(User user, UserRequest request);
+
+    void saveAvatar(User user, MultipartFile multipartFile);
 }
