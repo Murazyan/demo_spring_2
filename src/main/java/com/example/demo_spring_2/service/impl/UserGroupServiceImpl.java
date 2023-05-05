@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,5 +66,16 @@ public class UserGroupServiceImpl implements UserGroupService {
         }else {
             userGroupRepository.deleteByUserAndGroup(request.getUserId(), request.getGroupId());
         }
+    }
+
+    @Override
+    public List<Group> getGroupsByUserAndState(User user, UserGroupState state) {
+        return userGroupRepository.findAllByUserAndState(user, state).stream().map(UserGroup::getGroup).collect(Collectors.toList());
+    }
+
+    @Override
+    public Set<User> getParticipatedUsers(List<Group> groups) {
+        return userGroupRepository.findAllByGroupInAndState(groups, UserGroupState.APPROVED)
+                .stream().map(UserGroup::getUser).collect(Collectors.toSet());
     }
 }

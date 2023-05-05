@@ -1,5 +1,6 @@
 package com.example.demo_spring_2.repositories;
 
+import com.example.demo_spring_2.models.Group;
 import com.example.demo_spring_2.models.User;
 import com.example.demo_spring_2.models.UserGroup;
 import com.example.demo_spring_2.models.enums.UserGroupState;
@@ -18,8 +19,11 @@ import java.util.List;
 public interface UserGroupRepository extends JpaRepository<UserGroup, Integer> {
 
     Page<UserGroup> findAllByUserAndState(User user, UserGroupState state, Pageable pageable);
+    List<UserGroup> findAllByUserAndState(User user, UserGroupState state);
     Page<UserGroup> findAllByState(UserGroupState state, Pageable pageable);
     List<UserGroup> findAllByUser(User user);
+
+    List<UserGroup> findAllByGroupInAndState(List<Group> groups, UserGroupState state);
 
     @Modifying
     @Transactional

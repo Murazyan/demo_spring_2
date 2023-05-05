@@ -4,9 +4,12 @@ import com.example.demo_spring_2.dto.request.UserRequest;
 import com.example.demo_spring_2.dto.response.UserResponse;
 import com.example.demo_spring_2.events.UserAddEvent;
 import com.example.demo_spring_2.events.UserRegisteredEvent;
+import com.example.demo_spring_2.models.Group;
 import com.example.demo_spring_2.models.User;
+import com.example.demo_spring_2.models.enums.UserGroupState;
 import com.example.demo_spring_2.repositories.RoleRepository;
 import com.example.demo_spring_2.repositories.UserRepository;
+import com.example.demo_spring_2.service.UserGroupService;
 import com.example.demo_spring_2.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -22,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +36,8 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher applicationEventPublisher;
+
+    private final UserGroupService userGroupService;
 
     @Value("${app.student.avatar}")
     private String studentAvatar;
@@ -114,6 +120,15 @@ public class UserServiceImpl implements UserService {
         multipartFile.transferTo(new File(studentAvatar + "\\" + fileName));
         user.setAvatar(fileName);
         userRepository.save(user);
+    }
+
+    @Override
+    public Set<User> getFriends(User user) {
+        List<Group> joinedGroupsForUser = userGroupService.getGroupsByUserAndState(user, UserGroupState.APPROVED);
+        Set<User> participatedUsers = userGroupService.getParticipatedUsers(joinedGroupsForUser);
+        participatedUsers.remove(user);
+        return participatedUsers;
+
     }
 
 }

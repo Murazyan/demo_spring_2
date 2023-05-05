@@ -47,6 +47,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
+
                 .authorizeHttpRequests()
                 .requestMatchers("/user").permitAll()
                 .requestMatchers("/user/verify").permitAll()
@@ -54,14 +55,15 @@ public class WebSecurityConfig {
                 .requestMatchers("/").permitAll()
                 .anyRequest()
                 .authenticated()
+
                 .and()
                 .formLogin()
                 .loginPage("/")
                 .usernameParameter("email")
                 .passwordParameter("password")
                 .defaultSuccessUrl("/user/home")
-
                 .failureHandler(new CustomAuthenticationFailureHandler())
+
                 .and()
                 .exceptionHandling().accessDeniedHandler(accessDeniedHandler())
 

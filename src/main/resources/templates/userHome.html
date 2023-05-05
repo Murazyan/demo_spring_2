@@ -4,6 +4,28 @@
     <meta charset="UTF-8">
     <title>DemoSpring</title>
     <style>
+
+
+        .chat{
+            display: none;
+            /*position: fixed;*/
+            /*bottom: 200px;*/
+            /*right: 15px;*/
+            /*border: 3px solid #f1f1f1;*/
+            /*z-index: 9;*/
+            width: 100%;
+            height: 100%;
+            margin: 0em;
+            left: 0em;
+            top: 0em;
+            background: #eac7e9;
+            position: fixed;
+        }
+        .chat-container {
+            max-width: 300px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.22);
+        }
         /* The popup form - hidden by default */
         .form-popup {
             display: none;
@@ -57,6 +79,21 @@
         .form-container .btn:hover, .open-button:hover {
             opacity: 1;
         }
+        .user-messages{
+            width: 70%;
+            background-color: aliceblue;
+            margin: 0em;
+            left: 0em;
+            top: 0em;
+            position: fixed;
+        }
+        .chat-users{
+            width: 20%;
+            margin: 0em;
+            left: 0em;
+            top: 0em;
+            position: fixed;
+        }
 
     </style>
 </head>
@@ -68,6 +105,7 @@ Welcome
 <img style="height: 300px" th:src="${'/user/avatar/'+currentUser.getAvatar()} ">
 <a th:href="${'/logout'}" style="right: 5px; position: absolute; top: 5px">LogOut</a>
 <a th:href="${'/user/profile'}" style="right: 5px; position: absolute; top: 40px">Go to Profile</a>
+<button style="    position: absolute; top: 74px; right: 5px;"  th:attr="onclick=|openChat()|" >Messaging</button>
 
 
 <div th:if="${participatedGroups.getPage() > 0}" class="participated-groups" id="participated-groups-block"
@@ -152,10 +190,51 @@ Welcome
     </form>
 </div>
 
+
+<!-- The news add form -->
+<div class="chat" id="chat">
+    <div class="chat-container"></div>
+    <button style="right: 0px; position: absolute" type="button" class="btn cancel" onclick="closeChat()">Close</button>
+
+    <div class="chat-users" id="chat-users">
+        Users
+        <table border="1">
+            <thead>
+<!--            <tr>-->
+<!--&lt;!&ndash;                <th>Group id</th>&ndash;&gt;-->
+<!--&lt;!&ndash;                <th>Name</th>&ndash;&gt;-->
+<!--&lt;!&ndash;                <th>Join</th>&ndash;&gt;-->
+<!--            </tr>-->
+            </thead>
+            <tbody id="chat-user-bloc">
+            <tr th:each="user, iStat : ${chatUsers}">
+                <td th:text="${user.id}"/>
+                <td th:text="${user.name}"/>
+                <td th:text="${user.surname}"/>
+
+                <td title="Leave" style="cursor: pointer"
+                    th:attr="onclick=|joinToGroup('${user.id}', '${iStat.index}')|">+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+
+    </div>
+    <div class="user-messages" id="user-messages"></div>
+
+
+</div>
 <script>
     let availableGroupPage = 1;
     function openForm() {
         document.getElementById("add-news-form").style.display = "block";
+    }
+    function openChat() {
+        document.getElementById("chat").style.display = "block";
+    }
+    function closeChat() {
+        document.getElementById("chat").style.display = "none";
     }
 
     function closeForm() {

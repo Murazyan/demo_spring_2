@@ -16,19 +16,20 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     boolean existsByEmail(String email);
 
-    boolean existsByIdAndVerificationCode(int id , String verificationCode);
+    boolean existsByIdAndVerificationCode(int id, String verificationCode);
 
     @Transactional
     @Modifying
     @Query(value = "update User u set u.verificationCode=:verifyCode where u.id=:id")
     void updateVerificationCode(@Param("id") int id,
-                               @Param("verifyCode") String verificationCode);
+                                @Param("verifyCode") String verificationCode);
 
     @Transactional
     @Modifying
     @Query(value = "update User u set u.locked=:locked where u.id=:id")
     void updateLockedStatus(@Param("id") int id,
-                                @Param("locked") boolean locked);
+                            @Param("locked") boolean locked);
+
     Optional<User> findByEmail(String email);
 
 }

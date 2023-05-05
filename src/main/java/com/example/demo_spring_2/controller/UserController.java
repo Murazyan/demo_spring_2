@@ -79,6 +79,7 @@ public class UserController {
             model.addAttribute("availableGroupsPageNumbers", pageNumbers);
         }
 
+        model.addAttribute("chatUsers", userService.getFriends(currentUser.getUser()));
         return "userHome";
     }
 
