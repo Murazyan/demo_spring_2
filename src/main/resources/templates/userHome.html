@@ -4,15 +4,8 @@
     <meta charset="UTF-8">
     <title>DemoSpring</title>
     <style>
-
-
-        .chat{
+        .chat {
             display: none;
-            /*position: fixed;*/
-            /*bottom: 200px;*/
-            /*right: 15px;*/
-            /*border: 3px solid #f1f1f1;*/
-            /*z-index: 9;*/
             width: 100%;
             height: 100%;
             margin: 0em;
@@ -21,11 +14,13 @@
             background: #eac7e9;
             position: fixed;
         }
+
         .chat-container {
             max-width: 300px;
             padding: 10px;
             background-color: rgba(255, 255, 255, 0.22);
         }
+
         /* The popup form - hidden by default */
         .form-popup {
             display: none;
@@ -66,7 +61,7 @@
             border: none;
             cursor: pointer;
             width: 100%;
-            margin-bottom:10px;
+            margin-bottom: 10px;
             opacity: 0.8;
         }
 
@@ -79,7 +74,8 @@
         .form-container .btn:hover, .open-button:hover {
             opacity: 1;
         }
-        .user-messages{
+
+        .user-messages {
             width: 70%;
             background-color: aliceblue;
             margin: 0em;
@@ -87,7 +83,8 @@
             top: 0em;
             position: fixed;
         }
-        .chat-users{
+
+        .chat-users {
             width: 20%;
             margin: 0em;
             left: 0em;
@@ -96,6 +93,8 @@
         }
 
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </head>
 <body>
 <p style="color: red" th:if="${param.errorType!=null &&  param.errorType[0]=='accessDenied'}">Sorry you do not have
@@ -105,7 +104,7 @@ Welcome
 <img style="height: 300px" th:src="${'/user/avatar/'+currentUser.getAvatar()} ">
 <a th:href="${'/logout'}" style="right: 5px; position: absolute; top: 5px">LogOut</a>
 <a th:href="${'/user/profile'}" style="right: 5px; position: absolute; top: 40px">Go to Profile</a>
-<button style="    position: absolute; top: 74px; right: 5px;"  th:attr="onclick=|openChat()|" >Messaging</button>
+<button style="    position: absolute; top: 74px; right: 5px;" th:attr="onclick=|openChat()|">Messaging</button>
 
 
 <div th:if="${participatedGroups.getPage() > 0}" class="participated-groups" id="participated-groups-block"
@@ -125,7 +124,9 @@ Welcome
         <tr th:each="group, iStat : ${participatedGroups.getGroups()}">
             <td th:text="${group.id}"/>
             <td th:text="${group.name}"/>
-            <td><button  th:attr="onclick=|openForm('${group.id}', '${iStat.index}')|" >Add news</button></td>
+            <td>
+                <button th:attr="onclick=|openForm('${group.id}', '${iStat.index}')|">Add news</button>
+            </td>
             <td title="Leave" style="cursor: pointer"
                 th:attr="onclick=|leaveGroup('${group.id}', '${iStat.index}')|">-
             </td>
@@ -179,10 +180,10 @@ Welcome
     <form action="/action_page.php" class="form-container">
         <h1>Add new</h1>
 
-<!--        <label for="email"><b>Email</b></label>-->
+        <!--        <label for="email"><b>Email</b></label>-->
         <input type="text" placeholder="Enter Email" name="email" required>
 
-<!--        <label for="psw"><b>Password</b></label>-->
+        <!--        <label for="psw"><b>Password</b></label>-->
         <input type="password" placeholder="Enter Password" name="psw" required>
 
         <button type="submit" class="btn">Login</button>
@@ -198,41 +199,46 @@ Welcome
 
     <div class="chat-users" id="chat-users">
         Users
-        <table border="1">
+        <table>
             <thead>
-<!--            <tr>-->
-<!--&lt;!&ndash;                <th>Group id</th>&ndash;&gt;-->
-<!--&lt;!&ndash;                <th>Name</th>&ndash;&gt;-->
-<!--&lt;!&ndash;                <th>Join</th>&ndash;&gt;-->
-<!--            </tr>-->
+            <!--            <tr>-->
+            <!--&lt;!&ndash;                <th>Group id</th>&ndash;&gt;-->
+            <!--&lt;!&ndash;                <th>Name</th>&ndash;&gt;-->
+            <!--&lt;!&ndash;                <th>Join</th>&ndash;&gt;-->
+            <!--            </tr>-->
             </thead>
             <tbody id="chat-user-bloc">
-            <tr th:each="user, iStat : ${chatUsers}">
+            <tr  style=" height: 50px; cursor: pointer; background-color: azure;" th:each="user, iStat : ${chatUsers}"
+                 th:attr="onclick=|openChatHistory('${user.id}', '${iStat.index}')|"
+            >
                 <td th:text="${user.id}"/>
                 <td th:text="${user.name}"/>
                 <td th:text="${user.surname}"/>
-
-                <td title="Leave" style="cursor: pointer"
-                    th:attr="onclick=|joinToGroup('${user.id}', '${iStat.index}')|">+
-                </td>
             </tr>
             </tbody>
         </table>
 
 
     </div>
-    <div class="user-messages" id="user-messages"></div>
+    <div class="user-messages" id="user-messages" style="    position: absolute; left: 163px;
+}">
+
+    </div>
 
 
 </div>
-<script>
+<script th:inline="javascript">
     let availableGroupPage = 1;
+    let chatUserId;
+
     function openForm() {
         document.getElementById("add-news-form").style.display = "block";
     }
+
     function openChat() {
         document.getElementById("chat").style.display = "block";
     }
+
     function closeChat() {
         document.getElementById("chat").style.display = "none";
     }
@@ -270,6 +276,78 @@ Welcome
         const userBlock = document.getElementById('available-groups-block');
         userBlock.innerHTML = data;
         availableGroupPage = pageNumber;
+    }
+
+
+    //     socket functions
+
+    var stompClient = null;
+    var currentUserId = [[${currentUser.id}]];
+
+    function connect() {
+        var socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, onConnected, onError);
+
+    };
+
+    function onConnected() {
+        stompClient.subscribe('/topic/' + currentUserId, onMessageReceived);
+        console.log('connected')
+        // Tell your username to the server
+        // stompClient.send("/app/chat.addUser",
+        //     {},
+        //     JSON.stringify({sender: username, type: 'JOIN'})
+        // )
+        //
+    }
+
+    function onError(error) {
+        alert('Could not connect to WebSocket server. Please refresh this page to try again!');
+    }
+
+    function onMessageReceived(payload) {
+        alert((payload))
+        // var message = JSON.parse(payload.body);
+        // alert('onmessageReceivd : ' + message)
+
+    }
+
+    connect();
+
+    async function openChatHistory(toUserId, index){
+        const response = await fetch('http://localhost:8080/message?' + new URLSearchParams({
+            participateUserId: toUserId
+        }))
+
+        const data = await response.text();
+        const userBlock = document.getElementById('user-messages');
+        userBlock.innerHTML = data;
+        chatUserId = toUserId;
+    }
+
+    function sendMessage(){
+        fetch('http://localhost:8080/message', {
+            method: 'POST',
+            body: JSON.stringify({
+                "toUserId": chatUserId,
+                "message": document.getElementById('new-message').value
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            }
+
+        })
+            .then(response => {
+                if (response.status != 200) {
+                    alert("error")
+                } else {
+                    var newMessage = "<p>"+ document.getElementById('new-message')+"</p>"
+                    document.getElementById('messages').appendChild(newMessage);
+                    document.getElementById('new-message').value="";
+                }
+            })
     }
 </script>
 </body>

@@ -1,0 +1,11 @@
+<div>
+  <div id=" messages">
+    <div th:each="message, iStat : ${messages}">
+      <p th:text="${message.getText()}"></p>
+    </div>
+  </div>
+  <div id = "bottom">
+    <textarea placeholder="Type your message" id="new-message"></textarea>
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</div>

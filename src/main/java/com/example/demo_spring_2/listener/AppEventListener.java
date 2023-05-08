@@ -1,5 +1,7 @@
-package com.example.demo_spring_2.events;
+package com.example.demo_spring_2.listener;
 
+import com.example.demo_spring_2.events.UserAddEvent;
+import com.example.demo_spring_2.events.UserRegisteredEvent;
 import com.example.demo_spring_2.models.User;
 import com.example.demo_spring_2.service.impl.EmailService;
 import lombok.RequiredArgsConstructor;

@@ -50,6 +50,8 @@ public class WebSecurityConfig {
 
                 .authorizeHttpRequests()
                 .requestMatchers("/user").permitAll()
+                .requestMatchers("/message/**").hasAuthority("USER")
+                .requestMatchers("/test").permitAll()
                 .requestMatchers("/user/verify").permitAll()
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
                 .requestMatchers("/").permitAll()
