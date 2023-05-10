@@ -79,9 +79,9 @@
             width: 70%;
             background-color: aliceblue;
             margin: 0em;
-            left: 0em;
+            right: 0;
             top: 0em;
-            position: fixed;
+            position: absolute;
         }
 
         .chat-users {
@@ -92,6 +92,10 @@
             position: fixed;
         }
 
+        .right_side{
+       color: #04AA6D;
+
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
@@ -220,8 +224,7 @@ Welcome
 
 
     </div>
-    <div class="user-messages" id="user-messages" style="    position: absolute; left: 163px;
-}">
+    <div class="user-messages" id="user-messages">
 
     </div>
 
@@ -308,9 +311,15 @@ Welcome
     }
 
     function onMessageReceived(payload) {
-        alert((payload))
-        // var message = JSON.parse(payload.body);
-        // alert('onmessageReceivd : ' + message)
+        var body = JSON.parse(payload.body);
+        const p = document.createElement('p')
+        p.innerText = body.text;
+        if(body.fromUser.id==chatUserId){
+            document.getElementById('messages').appendChild(p);
+            document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight);
+
+        }
+
 
     }
 
@@ -343,8 +352,11 @@ Welcome
                 if (response.status != 200) {
                     alert("error")
                 } else {
-                    var newMessage = "<p>"+ document.getElementById('new-message')+"</p>"
-                    document.getElementById('messages').appendChild(newMessage);
+                    const p = document.createElement('p')
+                    p.className='right_side';
+                    p.innerText = document.getElementById('new-message').value
+                    // var newMessage = "<p>"+ document.getElementById('new-message')+"</p>"
+                    document.getElementById('messages').appendChild(p);
                     document.getElementById('new-message').value="";
                 }
             })

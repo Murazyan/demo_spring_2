@@ -46,6 +46,7 @@ public class MessageController {
                                  @RequestParam(name = "participateUserId") int participateUserId,
                                  ModelMap modelMap) {
         modelMap.addAttribute("messages", messageService.messagesByUsers(currentUser.getUser(), participateUserId));
+        modelMap.addAttribute("currentUser", currentUser.getUser());
         return "inner/userMessages";
     }
 
