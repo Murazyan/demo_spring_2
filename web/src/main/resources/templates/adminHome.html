@@ -19,7 +19,6 @@
             userBlockPage = pageNumber;
         }
 
-
         async function updateGroupRequestTable(pageSize, pageNumber) {
             const response = await fetch('http://localhost:8080/admin/waiting-group-requests?' + new URLSearchParams({
                 requestPage: pageNumber,
@@ -47,10 +46,12 @@
         }
 
         function updateUser(userId, rowNumber) {
+            const lockedValue = document.getElementById('user-locked-'+userId).value;
+            alert(lockedValue)
             fetch('http://localhost:8080/admin/user', {
                 method: 'PUT',
                 body: JSON.stringify({ "id": userId,
-                    'locked': document.getElementById('user-locked-'+userId).value}),
+                    'locked': lockedValue}),
                 headers: {
                     "Content-Type": "application/json",
                 }
@@ -59,6 +60,9 @@
                 .then(response => {
                     if (response.status != 200) {
                         alert("error")
+                    }
+                    else {
+                        updateUserTable(4,userBlockPage)
                     }
                 })
 

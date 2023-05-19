@@ -181,18 +181,18 @@ Welcome
 
 <!-- The news add form -->
 <div class="form-popup" id="add-news-form">
-    <form action="/action_page.php" class="form-container">
+    <div class="form-container">
         <h1>Add new</h1>
 
         <!--        <label for="email"><b>Email</b></label>-->
-        <input type="text" placeholder="Enter Email" name="email" required>
+        <input type="text" placeholder="Title" name="title" id="new-title" required>
 
         <!--        <label for="psw"><b>Password</b></label>-->
-        <input type="password" placeholder="Enter Password" name="psw" required>
-
-        <button type="submit" class="btn">Login</button>
+        <textarea placeholder="Content" id = "new-content"></textarea>
+        <input type="file" placeholder="ChooseFile" name="title" id="new-files" required>
+        <button type="submit" class="btn" onclick="addNew()">Add</button>
         <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-    </form>
+    </div>
 </div>
 
 
@@ -233,8 +233,10 @@ Welcome
 <script th:inline="javascript">
     let availableGroupPage = 1;
     let chatUserId;
+    let groupIdClickedForAddingNews;
 
-    function openForm() {
+    function openForm(groupId, idx) {
+        groupIdClickedForAddingNews = groupId;
         document.getElementById("add-news-form").style.display = "block";
     }
 
@@ -244,6 +246,22 @@ Welcome
 
     function closeChat() {
         document.getElementById("chat").style.display = "none";
+    }
+
+    function addNew(){
+        const title = document.getElementById("new-title").value
+        const content = document.getElementById("new-content").value
+        //const title = document.getElementById("new-title").value
+
+        alert(title)
+        alert(content)
+        invalidateNewsForm()
+        closeForm()
+    }
+
+    function invalidateNewsForm(){
+         document.getElementById("new-title").value = ''
+         document.getElementById("new-content").value = ''
     }
 
     function closeForm() {
